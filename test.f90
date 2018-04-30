@@ -1,22 +1,28 @@
 
+subroutine declareX (n,x)
+  implicit none
+  integer,parameter :: prec = 4
+  integer (kind = 4),intent(in) :: n
+  real (kind = prec) , intent(inout) :: x(n-1)
+  integer (kind = 4) :: i
 
-program main
-implicit none
+  Do i = 1,n-2
+    x(i) = 0
+  end DO
+  x(n-1) = -1
+end subroutine
 
-
-  integer (kind = 4) , parameter :: n = 6
-  real (kind = 4) :: A(n-1,n-1)
-  real (kind = 4) :: x(n-1),u(0:n)
-  integer (kind = 4) :: i,j
-  real (kind = 4) :: c
-
-  WRITE(*,*) 'testa'
-
+subroutine declareA (n,A)
+  implicit none
+  integer,parameter :: prec = 4
+  integer (kind = 4) :: i
+  integer (kind = 4),intent(in) :: n
+  real (kind = prec), intent(inout) :: A(n-1,n-1)
+  real (kind = prec),allocatable :: x(:)
+  allocate (x(n-1))
   Do i = 1,n-1
     x(i) = 0
   end DO
-
-
 
   Do i = 2,n-2
     A(i,:) = x
@@ -31,7 +37,75 @@ implicit none
   A(n-1,n-2) = 1
   A(n-1,n-1) = -2
 
-  x(n-1) = -1
+  if (allocated(x)) deallocate(x)
+end subroutine
+
+subroutine gaussAX (n,A,x)
+  implicit none
+  integer,parameter :: prec = 4
+  integer (kind = 4) :: i,j
+  integer (kind = 4),intent(in) :: n
+  real (kind = prec), intent(inout) :: A(n-1,n-1)
+  real (kind = prec),intent(inout)  :: x(n-1)
+
+  Do i = 2,n-1
+    Do j = 1,i-1
+        associate (c => A(i,j)/A(j,j))
+          A(i,:) = A(i,:)-c*A(j,:)
+          x(i)=x(i)-c*x(i-1)
+        end associate
+    end do
+  end do
+
+end subroutine
+
+subroutine gaussAX_normalise (n,A,x)
+  implicit none
+  integer,parameter :: prec = 4
+  integer (kind = 4) :: i,j
+  integer (kind = 4),intent(in) :: n
+  real (kind = prec), intent(inout) :: A(n-1,n-1)
+  real (kind = prec),intent(inout)  :: x(n-1)
+  real (kind = prec) :: c
+
+  Do i = 1,n-1
+    if (A(i,i) .NE. 0) then
+        c = A(i,i)
+        Do j = 1,n-1
+          A(i,j) = A(i,j)/c
+        end do
+        x(i) = x(i) / c
+    end if
+  end do
+
+end subroutine
+
+
+program main
+implicit none
+  integer :: args_count,first_argument,length,status
+  integer,parameter :: prec = 4
+  integer :: prec2
+  character(100) value
+  integer (kind = 4) :: n = 6
+  real (kind = prec), allocatable :: A(:,:)
+  real (kind = prec), allocatable :: x(:),u(:)
+  integer (kind = 4) :: i,j
+  real (kind = prec) :: err
+
+  call get_command_argument(1,value,length,status)
+  read(value,*) prec2
+  WRITE(*,*) prec2
+
+  allocate (A(n-1,n-1))
+  allocate (x(n-1))
+  allocate (u(0:n))
+
+  call declareX (n,x)
+  call declareA (n,A)
+
+
+
 
   WRITE(*,*) x
   WRITE(*,*) "A"
@@ -40,13 +114,7 @@ implicit none
     WRITE(*,*) A(i,:)
   end DO
 
-  Do i = 2,n-1
-    Do j = 1,i-1
-        c = A(i,j)/A(j,j)
-        A(i,:) = A(i,:)-c*A(j,:)
-        x(i)=x(i)-c*x(i-1)
-    end do
-  end do
+call  gaussAX (n,A,x)
 
 
         WRITE(*,*) 'after gauss'
@@ -57,17 +125,9 @@ implicit none
 
           WRITE(*,*) A(i,:)
         end DO
+call  gaussAX_normalise (n,A,x)
 
 
-  Do i = 1,n-1
-    if (A(i,i) .NE. 0) then
-      c = A(i,i)
-      Do j = 1,n-1
-        A(i,j) = A(i,j)/c
-      end do
-      x(i) = x(i) / c
-    end if
-  end do
 
 
       WRITE(*,*) 'after gauss2'
@@ -87,11 +147,18 @@ implicit none
         DO j = 1,i-1
             u(n-i) = u(n-i) - A(n-i,n-i+j)*u(n-i+j)
         end do
-
+    end do
 
     WRITE(*,*) 'after gauss reslove'
 
     WRITE(*,*) u
+    err = 0
 
+    DO i = 1,n-1
+      WRITE(*,*) (i/n)
+      WRITE(*,*) u(i)
+      err = err + ABS( u(i)-( real (i, kind = prec) / real (n, kind = prec) ) )
+    end do
+    WRITE(*,*) err
 
 end
