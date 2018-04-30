@@ -5,27 +5,37 @@ implicit none
 
 
   integer (kind = 4) , parameter :: n = 6
-  integer (kind = 4) :: A(n,n)
-  integer (kind = 4) :: x(n)
+  integer (kind = 4) :: A(n-1,n-1)
+  integer (kind = 4) :: x(n-1)
   integer (kind = 4) :: i
 
-  WRITE(*,*) 'test'
+  WRITE(*,*) 'testa'
 
-  Do i = 1,n
+  Do i = 1,n-1
     x(i) = 0
   end DO
-    x(n) = -1
-  WRITE(*,*) x
 
-  Do i = 2,n-1
+
+
+  Do i = 2,n-2
     A(i,:) = x
     A(i,i-1) = 1
     A(i,i+1) = 1
     A(i,i) = -2;
   end DO
+  A(1,:) = x
   A(1,1) = -2
-  A(n,n) = -2
-  Do i = 1,n
+  A(1,2) = 1
+  A(n-1,:) = x
+  A(n-1,n-2) = 1
+  A(n-1,n-1) = -2
+
+  x(n-1) = -1
+
+  WRITE(*,*) x
+  WRITE(*,*) "A"
+  Do i = 1,n-1
+
     WRITE(*,*) A(i,:)
   end DO
 
