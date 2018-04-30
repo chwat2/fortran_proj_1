@@ -79,7 +79,41 @@ subroutine gaussAX_normalise (n,A,x)
   end do
 
 end subroutine
+subroutine gaussAX_normalised_resolve (n,A,x,u)
+  implicit none
+  integer,parameter :: prec = 4
+  integer (kind = 4) :: i,j
+  integer (kind = 4),intent(in) :: n
+  real (kind = prec), intent(in) :: A(n-1,n-1)
+  real (kind = prec),intent(in)  :: x(n-1)
+  real (kind = prec),intent(inout)  :: u(0:n)
+  u(0) = 0
+  u(n) = 1
 
+  DO i = 1,n-1
+      u(n-i) = x(n-i)
+
+      DO j = 1,i-1
+          u(n-i) = u(n-i) - A(n-i,n-i+j)*u(n-i+j)
+      end do
+  end do
+
+end subroutine
+
+subroutine writeAx(n,A,x)
+  implicit none
+  integer,parameter :: prec = 4
+  integer (kind = 4) :: i
+  integer (kind = 4),intent(in) :: n
+  real (kind = prec), intent(in) :: A(n-1,n-1)
+  real (kind = prec),intent(in)  :: x(n-1)
+
+  WRITE(*,*) x
+  WRITE(*,*) "A"
+  Do i = 1,n-1
+    WRITE(*,*) A(i,:)
+  end DO
+end subroutine
 
 program main
 implicit none
@@ -107,24 +141,12 @@ implicit none
 
 
 
-  WRITE(*,*) x
-  WRITE(*,*) "A"
-  Do i = 1,n-1
-
-    WRITE(*,*) A(i,:)
-  end DO
+call writeAx(n,A,x)
 
 call  gaussAX (n,A,x)
 
 
-        WRITE(*,*) 'after gauss'
-
-        WRITE(*,*) x
-        WRITE(*,*) "A"
-        Do i = 1,n-1
-
-          WRITE(*,*) A(i,:)
-        end DO
+  call    writeAx(n,A,x)
 call  gaussAX_normalise (n,A,x)
 
 
@@ -138,16 +160,7 @@ call  gaussAX_normalise (n,A,x)
 
         WRITE(*,*) A(i,:)
       end DO
-    u(0) = 0
-    u(n) = 1
-
-    DO i = 1,n-1
-        u(n-i) = x(n-i)
-
-        DO j = 1,i-1
-            u(n-i) = u(n-i) - A(n-i,n-i+j)*u(n-i+j)
-        end do
-    end do
+  call gaussAX_normalised_resolve(n,A,x,u)
 
     WRITE(*,*) 'after gauss reslove'
 
