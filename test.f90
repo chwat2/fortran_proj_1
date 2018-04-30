@@ -48,6 +48,17 @@ implicit none
     end do
   end do
 
+  Do i = 1,n-1
+    if (A(i,i) .NE. 0) then
+      c = A(i,i)
+      Do j = 1,n-1
+        A(i,j) = A(i,j)/c
+        x(i) = x(i) / c
+      end do
+    end if
+  end do
+
+
       WRITE(*,*) 'after gauss'
 
       WRITE(*,*) x
@@ -56,5 +67,7 @@ implicit none
 
         WRITE(*,*) A(i,:)
       end DO
+
+
 
 end
