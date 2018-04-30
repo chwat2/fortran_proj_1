@@ -6,7 +6,7 @@ implicit none
 
   integer (kind = 4) , parameter :: n = 6
   real (kind = 4) :: A(n-1,n-1)
-  real (kind = 4) :: x(n-1)
+  real (kind = 4) :: x(n-1),u(0:n)
   integer (kind = 4) :: i,j
   real (kind = 4) :: c
 
@@ -48,18 +48,29 @@ implicit none
     end do
   end do
 
+
+        WRITE(*,*) 'after gauss'
+
+        WRITE(*,*) x
+        WRITE(*,*) "A"
+        Do i = 1,n-1
+
+          WRITE(*,*) A(i,:)
+        end DO
+
+
   Do i = 1,n-1
     if (A(i,i) .NE. 0) then
       c = A(i,i)
       Do j = 1,n-1
         A(i,j) = A(i,j)/c
-        x(i) = x(i) / c
       end do
+      x(i) = x(i) / c
     end if
   end do
 
 
-      WRITE(*,*) 'after gauss'
+      WRITE(*,*) 'after gauss2'
 
       WRITE(*,*) x
       WRITE(*,*) "A"
@@ -67,7 +78,20 @@ implicit none
 
         WRITE(*,*) A(i,:)
       end DO
+    u(0) = 0
+    u(n) = 1
 
+    DO i = 1,n-1
+        u(n-i) = x(n-i)
+
+        DO j = 1,i-1
+            u(n-i) = u(n-i) - A(n-i,n-i+j)*u(n-i+j)
+        end do
+
+
+    WRITE(*,*) 'after gauss reslove'
+
+    WRITE(*,*) u
 
 
 end
