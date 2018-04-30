@@ -5,9 +5,10 @@ implicit none
 
 
   integer (kind = 4) , parameter :: n = 6
-  integer (kind = 4) :: A(n-1,n-1)
-  integer (kind = 4) :: x(n-1)
-  integer (kind = 4) :: i
+  real (kind = 4) :: A(n-1,n-1)
+  real (kind = 4) :: x(n-1)
+  integer (kind = 4) :: i,j
+  real (kind = 4) :: c
 
   WRITE(*,*) 'testa'
 
@@ -38,5 +39,22 @@ implicit none
 
     WRITE(*,*) A(i,:)
   end DO
+
+  Do i = 2,n-1
+    Do j = 1,i-1
+        c = A(i,j)/A(j,j)
+        A(i,:) = A(i,:)-c*A(j,:)
+        x(i)=x(i)-c*x(i-1)
+    end do
+  end do
+
+      WRITE(*,*) 'after gauss'
+
+      WRITE(*,*) x
+      WRITE(*,*) "A"
+      Do i = 1,n-1
+
+        WRITE(*,*) A(i,:)
+      end DO
 
 end
