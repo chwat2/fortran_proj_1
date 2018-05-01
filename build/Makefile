@@ -123,6 +123,60 @@ test1/fast:
 	$(MAKE) -f CMakeFiles/test1.dir/build.make CMakeFiles/test1.dir/build
 .PHONY : test1/fast
 
+gauss_utils.o: gauss_utils.f90.o
+
+.PHONY : gauss_utils.o
+
+# target to build an object file
+gauss_utils.f90.o:
+	$(MAKE) -f CMakeFiles/test1.dir/build.make CMakeFiles/test1.dir/gauss_utils.f90.o
+.PHONY : gauss_utils.f90.o
+
+gauss_utils.i: gauss_utils.f90.i
+
+.PHONY : gauss_utils.i
+
+# target to preprocess a source file
+gauss_utils.f90.i:
+	$(MAKE) -f CMakeFiles/test1.dir/build.make CMakeFiles/test1.dir/gauss_utils.f90.i
+.PHONY : gauss_utils.f90.i
+
+gauss_utils.s: gauss_utils.f90.s
+
+.PHONY : gauss_utils.s
+
+# target to generate assembly for a file
+gauss_utils.f90.s:
+	$(MAKE) -f CMakeFiles/test1.dir/build.make CMakeFiles/test1.dir/gauss_utils.f90.s
+.PHONY : gauss_utils.f90.s
+
+heat_transport_test.o: heat_transport_test.f90.o
+
+.PHONY : heat_transport_test.o
+
+# target to build an object file
+heat_transport_test.f90.o:
+	$(MAKE) -f CMakeFiles/test1.dir/build.make CMakeFiles/test1.dir/heat_transport_test.f90.o
+.PHONY : heat_transport_test.f90.o
+
+heat_transport_test.i: heat_transport_test.f90.i
+
+.PHONY : heat_transport_test.i
+
+# target to preprocess a source file
+heat_transport_test.f90.i:
+	$(MAKE) -f CMakeFiles/test1.dir/build.make CMakeFiles/test1.dir/heat_transport_test.f90.i
+.PHONY : heat_transport_test.f90.i
+
+heat_transport_test.s: heat_transport_test.f90.s
+
+.PHONY : heat_transport_test.s
+
+# target to generate assembly for a file
+heat_transport_test.f90.s:
+	$(MAKE) -f CMakeFiles/test1.dir/build.make CMakeFiles/test1.dir/heat_transport_test.f90.s
+.PHONY : heat_transport_test.f90.s
+
 test.o: test.f90.o
 
 .PHONY : test.o
@@ -159,6 +213,12 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... test1"
+	@echo "... gauss_utils.o"
+	@echo "... gauss_utils.i"
+	@echo "... gauss_utils.s"
+	@echo "... heat_transport_test.o"
+	@echo "... heat_transport_test.i"
+	@echo "... heat_transport_test.s"
 	@echo "... test.o"
 	@echo "... test.i"
 	@echo "... test.s"
