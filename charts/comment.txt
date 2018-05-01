@@ -1,0 +1,4 @@
+Each precision has more than 10 orders of magnitude better performance (lower value of absolute error).
+
+The finite difference method for this initail conditions doesn't generate any error, so:
+there are only rounding errors, which absolute value increaces with the incerease of calculations (with the size of the grid "n").
