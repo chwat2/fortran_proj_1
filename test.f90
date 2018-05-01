@@ -1,7 +1,7 @@
 
 subroutine declareX (n,x)
   implicit none
-  integer,parameter :: prec = 4
+  integer,parameter :: prec = 16
   integer (kind = 4),intent(in) :: n
   real (kind = prec) , intent(inout) :: x(n-1)
   integer (kind = 4) :: i
@@ -14,7 +14,7 @@ end subroutine
 
 subroutine declareA (n,A)
   implicit none
-  integer,parameter :: prec = 4
+  integer,parameter :: prec = 16
   integer (kind = 4) :: i
   integer (kind = 4),intent(in) :: n
   real (kind = prec), intent(inout) :: A(n-1,n-1)
@@ -42,7 +42,7 @@ end subroutine
 
 subroutine gaussAX (n,A,x)
   implicit none
-  integer,parameter :: prec = 4
+  integer,parameter :: prec = 16
   integer (kind = 4) :: i,j
   integer (kind = 4),intent(in) :: n
   real (kind = prec), intent(inout) :: A(n-1,n-1)
@@ -61,7 +61,7 @@ end subroutine
 
 subroutine gaussAX_normalise (n,A,x)
   implicit none
-  integer,parameter :: prec = 4
+  integer,parameter :: prec = 16
   integer (kind = 4) :: i,j
   integer (kind = 4),intent(in) :: n
   real (kind = prec), intent(inout) :: A(n-1,n-1)
@@ -81,7 +81,7 @@ subroutine gaussAX_normalise (n,A,x)
 end subroutine
 subroutine gaussAX_normalised_resolve (n,A,x,u)
   implicit none
-  integer,parameter :: prec = 4
+  integer,parameter :: prec = 16
   integer (kind = 4) :: i,j
   integer (kind = 4),intent(in) :: n
   real (kind = prec), intent(in) :: A(n-1,n-1)
@@ -102,7 +102,7 @@ end subroutine
 
 subroutine writeAx(n,A,x)
   implicit none
-  integer,parameter :: prec = 4
+  integer,parameter :: prec = 16
   integer (kind = 4) :: i
   integer (kind = 4),intent(in) :: n
   real (kind = prec), intent(in) :: A(n-1,n-1)
@@ -115,63 +115,63 @@ subroutine writeAx(n,A,x)
   end DO
 end subroutine
 
-program main
-implicit none
-  integer :: args_count,first_argument,length,status
-  integer,parameter :: prec = 4
-  integer :: prec2
-  character(100) value
-  integer (kind = 4) :: n = 6
+function makeSimulation (n) result (errSum)
+  implicit none
+  integer,parameter :: prec = 16
+  integer (kind = 4),intent(in) :: n
+  real (kind = prec) :: errSum
   real (kind = prec), allocatable :: A(:,:)
   real (kind = prec), allocatable :: x(:),u(:)
   integer (kind = 4) :: i,j
-  real (kind = prec) :: err
-
-  call get_command_argument(1,value,length,status)
-  read(value,*) prec2
-  WRITE(*,*) prec2
 
   allocate (A(n-1,n-1))
   allocate (x(n-1))
   allocate (u(0:n))
-
+  WRITE(*,*) n
   call declareX (n,x)
+  !call    writeAx(n,A,x)
   call declareA (n,A)
-
-
-
-
-call writeAx(n,A,x)
-
-call  gaussAX (n,A,x)
-
-
-  call    writeAx(n,A,x)
-call  gaussAX_normalise (n,A,x)
-
-
-
-
-      WRITE(*,*) 'after gauss2'
-
-      WRITE(*,*) x
-      WRITE(*,*) "A"
-      Do i = 1,n-1
-
-        WRITE(*,*) A(i,:)
-      end DO
+  !call    writeAx(n,A,x)
+  call  gaussAX (n,A,x)
+  !call    writeAx(n,A,x)
+  call  gaussAX_normalise (n,A,x)
+  !call    writeAx(n,A,x)
   call gaussAX_normalised_resolve(n,A,x,u)
-
-    WRITE(*,*) 'after gauss reslove'
-
-    WRITE(*,*) u
-    err = 0
-
+  !call    writeAx(n,A,x)
+  !WRITE(*,*) u
+    errSum = 0
     DO i = 1,n-1
-      WRITE(*,*) (i/n)
-      WRITE(*,*) u(i)
-      err = err + ABS( u(i)-( real (i, kind = prec) / real (n, kind = prec) ) )
+      errSum = errSum + ABS( u(i)-( real (i, kind = prec) / real (n, kind = prec) ) ) !explicit shadowing
     end do
-    WRITE(*,*) err
+    if (allocated(x)) deallocate(x)
+    if (allocated(A)) deallocate(A)
+    if (allocated(u)) deallocate(u)
+end function
+
+program main
+implicit none
+
+  integer,parameter :: prec = 16
+  integer,parameter :: max_n = 1000
+  real(kind=prec),external :: makeSimulation
+  integer :: args_count,first_argument,length,status
+
+  integer :: prec2,i
+  character(100) value
+
+  integer (kind = 4) :: n
+  real (kind = prec) :: err(100)
+
+  call get_command_argument(1,value,length,status)
+  read(value,*) prec2
+  !WRITE(*,*) prec2
+  i = 0
+  open(unit = 7, file = "../stats/stats_16.dat")
+  DO n = 5,max_n,10
+    i = i + 1
+    err(i) =  makeSimulation(n)
+    WRITE(7,*) n, err(i)
+  end do
+  close(7)
 
 end
